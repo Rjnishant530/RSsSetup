@@ -17,9 +17,9 @@ services:
     # ports:
     #   - 8080:80
     environment:
-      - TZ=Asia/Kolkata             
+      - TZ=Asia/Kolkata             # Select your country code from https://www.php.net/timezones
       - CRON_MIN=1,31
-      - BASE_URL=http://localhost/ # change to your domain base url
+      - BASE_URL=http://localhost/  # change to your domain base url
     volumes:
       - freshrss_data:/var/www/FreshRSS/data
       - freshrss_extensions:/var/www/FreshRSS/extensions
