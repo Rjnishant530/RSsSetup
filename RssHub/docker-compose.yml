@@ -1,0 +1,84 @@
+version: '3.8'
+services:
+  proxy:
+    image: nginx
+    container_name: proxy_server
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+    depends_on:
+      - freshRss
+  freshRss:
+    image: freshrss/freshrss
+    restart: unless-stopped
+    container_name: freshRss
+    # ports:
+    #   - 8080:80
+    environment:
+      - TZ=Asia/Kolkata             
+      - CRON_MIN=1,31
+      - BASE_URL=http://localhost/ # change to your domain base url
+    volumes:
+      - freshrss_data:/var/www/FreshRSS/data
+      - freshrss_extensions:/var/www/FreshRSS/extensions
+      - ./config.php:/var/www/FreshRSS/data/config.php
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    depends_on:
+      - rsshub
+  rsshub:
+    image: diygod/rsshub
+    restart: unless-stopped
+    container_name: rss_hub
+    environment:
+      - HTTP_BASIC_AUTH_NAME=nishant
+      - HTTP_BASIC_AUTH_PASS=bottleisblack
+      - CACHE_TYPE=redis
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis_db:6379
+      - GITHUB_ACCESS_TOKEN=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
+    # ports:
+      # - 1200:1200
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    depends_on:
+      - redis_db
+  redis_db:
+    image: redis
+    build: .
+    container_name: redis_cache
+    volumes:
+        - redis_data:/data
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+  fullfeedrss:
+    image: "heussd/fivefilters-full-text-rss:latest"
+    container_name: full_feed_rss
+    environment:
+      # Leave empty to disable admin section
+      - FTR_ADMIN_PASSWORD=
+    volumes:
+      - rss-cache:/var/www/html/cache
+    # ports:
+      # - "90:80"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watch_tower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 0 0 * * 0
+      - TZ="Asia/Kolkata"
+      - WATCHTOWER_LABEL_ENABLE=true
+volumes:
+  freshrss_data:
+  freshrss_extensions:
+  redis_data:
+  rss-cache:
