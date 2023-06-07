@@ -19,7 +19,7 @@ services:
     # ports:
     #   - 8080:80
     environment:
-      - TZ=Asia/Kolkata             
+      - TZ=Asia/Kolkata             # Select your country code from https://www.php.net/timezones
       - CRON_MIN=1,31
       - BASE_URL=http://localhost/ # change to your domain base url
     volumes:
@@ -36,7 +36,7 @@ services:
       - FTR_ADMIN_PASSWORD=
     volumes:
       - rss-cache:/var/www/html/cache
-    # ports:
+    # ports:                        #Comment out these two lines for local deployment
       # - "90:80"
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
@@ -48,7 +48,7 @@ services:
     environment:
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_SCHEDULE=0 0 0 * * 0
-      - TZ="Asia/Kolkata"
+      - TZ="Asia/Kolkata"             # Select your country code from https://www.php.net/timezones
       - WATCHTOWER_LABEL_ENABLE=true
 volumes:
   freshrss_data:
