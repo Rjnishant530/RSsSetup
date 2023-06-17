@@ -1,23 +1,11 @@
 version: '3.8'
 services:
-  proxy:
-    image: nginx
-    container_name: proxy_server
-    restart: unless-stopped
-    ports:
-      - 80:80
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
-    depends_on:
-      - freshRss
   freshRss:
     image: freshrss/freshrss
     restart: unless-stopped
     container_name: freshRss
-    # ports:
-    #   - 8080:80
+    ports:
+      - 80:80
     environment:
       - TZ=Asia/Kolkata             # Select your country code from https://www.php.net/timezones
       - CRON_MIN=1,31
