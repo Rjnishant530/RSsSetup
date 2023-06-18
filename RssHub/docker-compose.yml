@@ -23,12 +23,9 @@ services:
     restart: unless-stopped
     container_name: rss_hub
     environment:
-      - HTTP_BASIC_AUTH_NAME=rjnishant
-      - HTTP_BASIC_AUTH_PASS=plantsareawesome
       - CACHE_TYPE=redis
       - NODE_ENV=production
       - REDIS_URL=redis://redis_db:6379
-      - GITHUB_ACCESS_TOKEN=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
     # ports:                      #Comment out these two lines for local deployment
       # - 1201:1200
     labels:
