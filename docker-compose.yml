@@ -1,15 +1,17 @@
 version: '3.8'
 services:
-  freshRss:
-    image: freshrss/freshrss
+  freshrss:
+    build:
+      context: https://github.com/FreshRSS/FreshRSS.git#latest
+      dockerfile: Docker/Dockerfile-Alpine
     restart: unless-stopped
     container_name: freshRss
     ports:
-      - 80:80
+      - ${FRESHRSS_PORT}:80
     environment:
-      - TZ=Asia/Kolkata             
-      - CRON_MIN=1,31
-      - BASE_URL=http://localhost/ # change to your domain base url
+      - TZ=${TZ}             
+      - CRON_MIN=${CRON_MIN}
+      - BASE_URL=${BASE_URL}
     volumes:
       - freshrss_data:/var/www/FreshRSS/data
       - freshrss_extensions:/var/www/FreshRSS/extensions
@@ -26,8 +28,9 @@ services:
       - CACHE_TYPE=redis
       - NODE_ENV=production
       - REDIS_URL=redis://redis_db:6379
-    # ports:                      #Comment out these two lines for local deployment
-      # - 1201:1200
+      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
+    ports:                      
+      - ${RSSHUB_PORT}:1200
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
     depends_on:
@@ -48,8 +51,8 @@ services:
       - FTR_ADMIN_PASSWORD=
     volumes:
       - rss-cache:/var/www/html/cache
-    # ports:                      #Comment out these two lines for local deployment
-      # - "90:80"
+    ports:                      
+      - ${FULL_FEED_RSS_PORT}:80
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
   watchtower:
@@ -58,10 +61,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_SCHEDULE=0 0 0 * * 0
-      - TZ="Asia/Kolkata"
-      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_CLEANUP=${WATCHTOWER_CLEANUP}
+      - WATCHTOWER_SCHEDULE=${WATCHTOWER_SCHEDULE}
+      - TZ=${TZ}
+      - WATCHTOWER_LABEL_ENABLE=${WATCHTOWER_LABEL_ENABLE}
 volumes:
   freshrss_data:
   freshrss_extensions:
